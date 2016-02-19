@@ -58,7 +58,7 @@ app.get('/response/ivr/', function(request, response) {
   response.send(r.toXML());
 });
 
-app.post('/response/choose/', function(request, response) {
+app.get('/response/choose/', function(request, response) {
   const r = new Response();
   const digit = request.query.Digits;  
   if (digit === '1') {
@@ -83,7 +83,7 @@ app.post('/response/choose/', function(request, response) {
   response.send(r.toXML());
 });
 
-app.all('/response/tree/', function(request, response) {
+app.get('/response/tree/', function(request, response) {
   var r = new Response();
   let text = WRONG_INPUT_MESSAGE, params = {};
   const digit = request.body.Digits || request.query.Digits;
