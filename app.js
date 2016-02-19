@@ -1,5 +1,6 @@
 import Express from 'express';
 import Response from 'plivo-promise/lib/PlivoResponse';
+import bodyParser from 'body-parser';
 
 const app = Express();
 
@@ -18,6 +19,7 @@ const NO_INPUT_MESSAGE = "Sorry, I didn't catch that. Please hangup and try agai
 const WRONG_INPUT_MESSAGE = "Sorry, you've entered an invalid input.";
 
 
+// app.use(bodyParser.urlencoded({extended: true}));
 app.use(function(request, res, next){
   let usableSlug = request.originalUrl.replace(request.path, '');
   if( usableSlug.indexOf('?') !== -1 ){
@@ -27,11 +29,11 @@ app.use(function(request, res, next){
   next();
 });
 
-app.get("/", function(req, res){
+app.get("/", function(){
   res.json({
     "action": "Call",
     "emoticon": "Please",
-    "number": "+12562512136"
+    "number": ""
   })
 });
 
@@ -56,7 +58,7 @@ app.get('/response/ivr/', function(request, response) {
   response.send(r.toXML());
 });
 
-app.get('/response/choose/', function(request, response) {
+app.post('/response/choose/', function(request, response) {
   const r = new Response();
   const digit = request.query.Digits;  
   if (digit === '1') {
@@ -81,10 +83,10 @@ app.get('/response/choose/', function(request, response) {
   response.send(r.toXML());
 });
 
-app.get('/response/tree/', function(request, response) {
+app.all('/response/tree/', function(request, response) {
   var r = new Response();
   let text = WRONG_INPUT_MESSAGE, params = {};
-  const digit = request.query.Digits;
+  const digit = request.body.Digits || request.query.Digits;
   
   switch (digit){
     case "1": 
@@ -99,7 +101,7 @@ app.get('/response/tree/', function(request, response) {
       text = "Это сообщение было прочитано в России";
       params = {'language': 'ru-RU'};
     break;
-5  }  
+  }  
 
   r.addSpeak(text, params);
   response.set({'Content-Type': 'text/xml'});
