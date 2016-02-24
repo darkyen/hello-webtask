@@ -3,6 +3,7 @@ import Response from 'plivo-promise/lib/PlivoResponse';
 import bodyParser from 'body-parser';
 
 const app = Express();
+app.use(bodyParser.urlencoded({extended: true}));
 
 // This file will be played when a caller presses 2.
 const PLIVO_SONG = "https://s3.amazonaws.com/plivocloud/music.mp3";
@@ -44,7 +45,7 @@ app.get('/response/ivr/', function(request, response) {
   const getdigits_action_url =  'https://' + request.headers.host + request.usableSlug + '/response/choose/';
   const params = {
     'action': getdigits_action_url,
-    'method': 'GET',
+    'method': 'POST',
     'timeout': '7',
     'numDigits': '1',
     'retries': '1'
@@ -58,9 +59,9 @@ app.get('/response/ivr/', function(request, response) {
   response.send(r.toXML());
 });
 
-app.get('/response/choose/', function(request, response) {
+app.post('/response/choose/', function(request, response) {
   const r = new Response();
-  const digit = request.query.Digits;  
+  const digit = request.body.Digits;  
   if (digit === '1') {
     const getdigits_action_url = 'https://' + request.headers.host + request.usableSlug + '/response/tree/';
     const params = {
